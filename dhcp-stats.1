@@ -1,0 +1,19 @@
+.TH dhcp-stats 1
+.SH NAME
+dhcp-stats \- monitor and analyze DHCP traffic on network
+.SH SYNOPSIS
+.B dhcp-stats
+[\fB\-i\fR \fI<interface>\fR]
+[\fB\-r\fR \fI<filename>\fR]
+\fI<ip-prefix>\fR
+[\fI<ip-prefix>\fR [\fB...\fR]]
+.SH DESCRIPTION
+.B dhcp-stats
+monitors and analyzes DHCP traffic
+.SH OPTIONS
+.TP
+.BR \-i
+Set the interface on which the analyzer should listen.
+.TP
+.BR \-r
+Set a pcap file as input to the analyzer.
