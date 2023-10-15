@@ -5,7 +5,6 @@ DHCPAnalyzer::DHCPAnalyzer() {
 
 bool DHCPAnalyzer::quit(bool ret_stat) {
     pcap_close(handle);
-    pcap_freecode(&filter);
     return ret_stat;
 }
 
@@ -42,7 +41,7 @@ bool DHCPAnalyzer::initialize(const char *filename, const char *interface, std::
         perror("could apply filter to stream");
         return quit(EXIT_FAILURE);
     }
-
+    pcap_freecode(&filter);
     return EXIT_SUCCESS;
 }
 
@@ -84,8 +83,11 @@ const u_char *DHCPAnalyzer::strip_payload(const u_char *packet) {
 
 void DHCPAnalyzer::interpret_dhcp_packet(const dhcp_packet *packet) {
     uint8_t message_type = get_dhcp_message_type(packet);
+    if (!message_type) {
+        // do SOMETHING
+    }
     switch (message_type) {
-    case DHCP_ACK: {
+    case DHCPACK: {
         int i = 0;
         while (i < addrs.size()) {
             if (addrs[i] == packet->yiaddr.s_addr)

@@ -13,15 +13,11 @@
 #include <pcap.h>
 #include <stdlib.h>
 #include <sys/socket.h>
-#include <sys/time.h>
 #include <syslog.h>
-#include <time.h>
 #include <unistd.h>
 
-#include <algorithm>
 #include <iostream>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "dhcp.hpp"

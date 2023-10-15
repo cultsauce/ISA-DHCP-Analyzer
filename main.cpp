@@ -18,16 +18,20 @@ int main(int argc, char *argv[]) {
     }
 
     if ((filename == nullptr && interface == nullptr) || (filename != nullptr && interface != nullptr)) {
+        fprintf(stderr, "usage: ./dhcp-stats [-r <filename>] [-i <interface-name>] <ip-prefix> [ <ip-prefix> [ ... ] ]\n");
         exit(EXIT_FAILURE);
     }
 
     DHCPAnalyzer analyzer;
-    analyzer.initialize(filename, interface, prefixes);
+    if (analyzer.initialize(filename, interface, prefixes) != EXIT_SUCCESS) {
+        return EXIT_FAILURE;
+    }
     openlog("dhcp-stats.log", LOG_PID, LOG_USER);
 
     /* prepare ncurses */
     initscr();
     printw("IP-Prefix\tMax-hosts\tAllocated addresses\tUtilization\n");
+    refresh();
     while (analyzer.next() == EXIT_SUCCESS) {
 
         for (int i = 0; i < analyzer.subnet_stats.size(); i++) {
