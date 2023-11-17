@@ -11,23 +11,15 @@
 #define MAX_DHCP_FILE_LENGTH 128
 #define MAX_DHCP_OPTIONS_LENGTH 312
 
-#define DHCPDISCOVER 1
-#define DHCPOFFER 2
-#define DHCPREQUEST 3
-#define DHCPDECLINE 4
 #define DHCPACK 5
-#define DHCPNACK 6
-#define DHCPRELEASE 7
 
 #define DHCP_OPTION_MESSAGE_TYPE 53
-#define DHCP_OPTION_HOST_NAME 12
-#define DHCP_OPTION_BROADCAST_ADDRESS 28
-#define DHCP_OPTION_REQUESTED_ADDRESS 50
-#define DHCP_OPTION_LEASE_TIME 51
-#define DHCP_OPTION_RENEWAL_TIME 58
-#define DHCP_OPTION_REBINDING_TIME 59
+#define DHCP_OPTION_SERVER_ADDRESS 54
+#define DHCP_OPTION_DNS_ADDRESS 53
+#define DHCP_OPTION_ROUTER_ADDRESS 3
 #define DHCP_OPTION_END 255
 
+/* structure of a DHCP packet */
 typedef struct dhcp_packet_struct {
     uint8_t op;                               /* packet type */
     uint8_t htype;                            /* HW type (Etherne, etc) */
@@ -47,6 +39,15 @@ typedef struct dhcp_packet_struct {
     uint8_t options[MAX_DHCP_OPTIONS_LENGTH]; /* options */
 } dhcp_packet;
 
+/* extract dhcp option from options field */
+uint8_t *get_dhcp_option(uint8_t *buff, uint8_t option_id);
+/* get dhcp message type option */
 uint8_t get_dhcp_message_type(const dhcp_packet *packet);
+/* get dhcp server address */
+in_addr get_dhcp_server_address(const dhcp_packet *packet);
+/* get dns server address */
+uint32_t get_dhcp_dns_address(const dhcp_packet *packet);
+/* get router address */
+uint32_t get_dhcp_router_address(const dhcp_packet *packet);
 
 #endif // DHCP_H

@@ -21,43 +21,35 @@
 #include <vector>
 
 #include "dhcp.hpp"
+#include "subnet.hpp"
 
-class Subnet {
-public:
-    const char *name;
-    struct in_addr net_addr;
-    uint32_t max_alloc;
-    uint32_t allocated;
-    uint8_t prefix;
-
-    Subnet(const char *addr, uint32_t alloc_addr);
-    double get_percentage();
-    bool contains(const in_addr *ip_addr);
-
-private:
-    uint32_t get_max_addr_count();
-};
-
+/* DHCP Analyzer class definition */
 class DHCPAnalyzer {
 public:
-    char *interface_name;
-    char *filename;
-    char errbuf[PCAP_ERRBUF_SIZE];
-    pcap_t *handle;
-    std::vector<Subnet> subnet_stats;
-    std::vector<in_addr_t> addrs;
+    char *interface_name;             /* name of the interface to listen on, if given */
+    char *filename;                   /* name of pcap file, if given */
+    char errbuf[PCAP_ERRBUF_SIZE];    /* buffer to store error messages */
+    pcap_t *handle;                   /* handle to pcap stream */
+    std::vector<Subnet> subnet_stats; /* storage of statistical info about subnets */
+    std::vector<in_addr_t> addrs;     /* vector of prefix addresses to take statistics for */
 
+    /* class constructor */
     DHCPAnalyzer();
+    /* initialize analyzer class with needed parameters */
     bool initialize(const char *filename, const char *interface,
                     std::vector<const char *> prefixes);
+    /* analyze next packet from stream */
     int next();
+    /* quit analyzer */
     bool quit(bool ret_stat);
 
 private:
-    struct bpf_program filter;
+    /* strip dhcp message of Eth, IP and UDP headers */
     const u_char *strip_payload(const u_char *packet);
+    /* analyze fetched packet */
     void interpret_dhcp_packet(const dhcp_packet *packet);
-    void update_subnet_stats(const in_addr *addr, bool add);
+    /* update statistical information */
+    void update_subnet_stats(const in_addr *addr);
 };
 
 #endif // DHCP_STAT
