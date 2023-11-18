@@ -22,8 +22,12 @@ int main(int argc, char *argv[]) {
     std::vector<const char *> prefixes = {};
 
     int opt;
-    while ((opt = getopt(argc, argv, ":r:i:")) != -1) {
+    while ((opt = getopt(argc, argv, ":hr:i:")) != -1) {
         switch (opt) {
+        case 'h': {
+            fprintf(stdout, "usage: ./dhcp-stats [-r <filename>] [-i <interface-name>] <ip-prefix> [ <ip-prefix> [ ... ] ]\n");
+            exit(EXIT_SUCCESS);
+        }
         case 'i': {
             interface = optarg;
             break;
@@ -35,7 +39,7 @@ int main(int argc, char *argv[]) {
         case '?':
         case ':': {
             fprintf(stderr, "usage: ./dhcp-stats [-r <filename>] [-i <interface-name>] <ip-prefix> [ <ip-prefix> [ ... ] ]\n");
-            break;
+            exit(EXIT_FAILURE);
         }
         }
     }
