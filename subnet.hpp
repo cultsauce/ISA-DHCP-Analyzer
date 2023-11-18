@@ -27,7 +27,7 @@ public:
     bool exceeded_half;      /* flag of whether the prefix exceeded 50% of allocations threshold */
 
     /* class constructor */
-    Subnet(const char *addr, uint32_t alloc_addr);
+    Subnet(const char *addr, uint32_t alloc_addr, bool &err);
     /* calculate utilization percentage */
     double get_percentage();
     /* check if given subnet contains the supplied ip_addr */

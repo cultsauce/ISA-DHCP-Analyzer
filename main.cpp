@@ -15,6 +15,8 @@ void handler(int signum) {
 
 int main(int argc, char *argv[]) {
     signal(SIGINT, handler);
+    signal(SIGTERM, handler);
+    signal(SIGKILL, handler);
     char *filename = nullptr;
     char *interface = nullptr;
     std::vector<const char *> prefixes = {};
@@ -55,17 +57,23 @@ int main(int argc, char *argv[]) {
 
     /* prepare ncurses */
     initscr();
-    printw("IP-Prefix\tMax-hosts\tAllocated addresses\tUtilization\n");
+    curs_set(0);
+    mvprintw(0, 0, "IP-Prefix");
+    mvprintw(0, 20, "Max-hosts");
+    mvprintw(0, 40, "Allocated addresses");
+    mvprintw(0, 70, "Utilization");
+
     refresh();
     int res;
-    int exceeded = 0;
-    while ((res = analyzer->next()) == EXIT_SUCCESS) {
+    int exceeded = 0, start = 0;
+    while (!start || (res = analyzer->next()) == EXIT_SUCCESS) {
+        start = 1;
         for (int i = 0; i < analyzer->subnet_stats.size(); i++) {
-            mvprintw(i + 2, 0, "%s/%u\t%u\t%u\t%.2f%\n", inet_ntoa(analyzer->subnet_stats[i].net_addr),
-                     analyzer->subnet_stats[i].prefix,
-                     analyzer->subnet_stats[i].max_alloc,
-                     analyzer->subnet_stats[i].allocated,
-                     analyzer->subnet_stats[i].get_percentage());
+            mvprintw(i + 2, 0, "%s/%u", inet_ntoa(analyzer->subnet_stats[i].net_addr),
+                     analyzer->subnet_stats[i].prefix);
+            mvprintw(i + 2, 20, "%u", analyzer->subnet_stats[i].max_alloc);
+            mvprintw(i + 2, 40, "%u", analyzer->subnet_stats[i].allocated);
+            mvprintw(i + 2, 70, "%.2f%%", analyzer->subnet_stats[i].get_percentage());
 
             /* write to syslog if the current subnet exceeded 50% of possible allocations */
             if (analyzer->subnet_stats[i].get_percentage() >= 50.0 && !analyzer->subnet_stats[i].exceeded_half) {

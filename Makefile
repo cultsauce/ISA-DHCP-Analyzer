@@ -10,7 +10,7 @@ clean:
 	rm -f *.o $(EXEC)
 
 pack: clean
-	tar -cvf xkubin27.tar * 
+	tar -cvf xkubin27.tar dhcp-stats.* dhcp.* subnet.* main.cpp README.md examples Makefile
 
 %.o: %.cpp %.hpp
 	$(CC) $(CFLAGS) -c $<

@@ -31,13 +31,20 @@ bool DHCPAnalyzer::initialize(const char *filename, const char *interface, std::
     }
 
     for (int i = 0; i < prefixes.size(); i++) {
-        subnet_stats.push_back(Subnet(prefixes[i], 0));
+        bool err = false;
+        Subnet subnet(prefixes[i], 0, err);
+        if (err) {
+            fprintf(stderr, "error: invalid prefix\n");
+            return quit(EXIT_FAILURE);
+        }
+        subnet_stats.push_back(subnet);
     }
-
+    /* sort prefixes by prefix length */
+    std::sort(subnet_stats.begin(), subnet_stats.end(), [](Subnet a, Subnet b) { return a.prefix > b.prefix; });
     struct bpf_program filter;
 
     /* compile stream filter */
-    if (pcap_compile(handle, &filter, "udp port 68 or udp port 67 or (vlan and (udp port 67 or udp port 68))", PCAP_OPENFLAG_PROMISCUOUS, PCAP_NETMASK_UNKNOWN) == PCAP_ERROR) {
+    if (pcap_compile(handle, &filter, "udp port 68 or udp port 67 or (vlan and (udp port 67 or udp port 68))", 0U, 0xffffffff) == PCAP_ERROR) {
         fprintf(stderr, "error: could not compile packet filter\n");
         return quit(EXIT_FAILURE);
     }
@@ -59,7 +66,7 @@ int DHCPAnalyzer::next() {
             return EXIT_SUCCESS;
         dhcp_packet *dhcp_pckt;
         dhcp_pckt = (dhcp_packet *)payload;
-        interpret_dhcp_packet(dhcp_pckt);
+        interpret_dhcp_message(dhcp_pckt);
         return EXIT_SUCCESS;
     }
     return EXIT_FAILURE;
@@ -80,6 +87,11 @@ const u_char *DHCPAnalyzer::strip_payload(const u_char *packet) {
         /* ip header length is in 32 bit increments */
         payload += my_ip->ip_hl * 4;
 
+        /* check if udp payload is big enough for dhcp */
+        udphdr *udp_packet = (udphdr *)(payload);
+        if ((udp_packet->len - sizeof(udphdr)) < sizeof(dhcp_packet))
+            return nullptr;
+
         /* skip udp header */
         payload += sizeof(udphdr);
     } else
@@ -88,7 +100,7 @@ const u_char *DHCPAnalyzer::strip_payload(const u_char *packet) {
     return payload;
 }
 
-void DHCPAnalyzer::interpret_dhcp_packet(const dhcp_packet *packet) {
+void DHCPAnalyzer::interpret_dhcp_message(const dhcp_packet *packet) {
     uint8_t message_type = get_dhcp_message_type(packet);
     if (!message_type)
         return;
@@ -96,11 +108,6 @@ void DHCPAnalyzer::interpret_dhcp_packet(const dhcp_packet *packet) {
     case DHCPACK: {
         /* add yiaddr field to statistics */
         update_subnet_stats(&packet->yiaddr);
-
-        /* add dhcp server address to statistics */
-        in_addr svr_addr = get_dhcp_server_address(packet);
-        if (svr_addr.s_addr != 0x00)
-            update_subnet_stats(&svr_addr);
         break;
     }
 

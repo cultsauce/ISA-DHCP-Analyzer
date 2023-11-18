@@ -1,16 +1,28 @@
 #include "subnet.hpp"
 
-Subnet::Subnet(const char *addr, uint32_t alloc_addr) {
+Subnet::Subnet(const char *addr, uint32_t alloc_addr, bool &err) {
     size_t start = ((std::string)addr).find("/") + 1;
-    prefix = std::stoi(((std::string)addr).substr(((std::string)addr).find("/") + 1, std::string::npos));
-    net_addr.s_addr = inet_addr((((std::string)addr).substr(0, start - 1)).c_str());
+    try {
+        prefix = std::stoi(((std::string)addr).substr(((std::string)addr).find("/") + 1, std::string::npos));
+        if (prefix > 32 || prefix < 0)
+            throw std::invalid_argument("invalid prefix");
+    } catch (std::invalid_argument) {
+        err = true;
+        return;
+    }
+    int check_addr = inet_addr((((std::string)addr).substr(0, start - 1)).c_str());
+    if (check_addr == -1) {
+        err = true;
+        return;
+    }
+    net_addr.s_addr = check_addr;
     allocated = alloc_addr;
     max_alloc = get_max_addr_count();
     exceeded_half = false;
 }
 
 uint32_t Subnet::get_max_addr_count() {
-    return pow(2, 32 - prefix) - 2;
+    return (prefix == 32) ? 0x00 : pow(2, 32 - prefix) - 2;
 }
 
 double Subnet::get_percentage() {

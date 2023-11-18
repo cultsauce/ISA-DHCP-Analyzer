@@ -16,6 +16,7 @@
 #include <syslog.h>
 #include <unistd.h>
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -47,7 +48,7 @@ private:
     /* strip dhcp message of Eth, IP and UDP headers */
     const u_char *strip_payload(const u_char *packet);
     /* analyze fetched packet */
-    void interpret_dhcp_packet(const dhcp_packet *packet);
+    void interpret_dhcp_message(const dhcp_packet *packet);
     /* update statistical information */
     void update_subnet_stats(const in_addr *addr);
 };
