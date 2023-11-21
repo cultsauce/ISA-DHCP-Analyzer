@@ -1,3 +1,9 @@
+/*
+** file: dhcp.cpp
+** desc: definitions for dhcp helper functions
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #include "dhcp.hpp"
 uint8_t *get_dhcp_option(uint8_t *buff, uint8_t option_id) {
     uint8_t *ptr = buff;

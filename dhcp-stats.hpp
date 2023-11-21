@@ -1,3 +1,9 @@
+/*
+** file: dhcp-stats.hpp
+** desc: DHCPAnalyzer class definition
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #ifndef DHCP_STAT
 #define DHCP_STAT
 

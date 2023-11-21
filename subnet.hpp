@@ -1,3 +1,9 @@
+/*
+** file: subnet.hpp
+** desc: definition of subnet class
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #ifndef SUBNET_H
 #define SUBNET_H
 

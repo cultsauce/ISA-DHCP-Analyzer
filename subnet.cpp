@@ -1,3 +1,9 @@
+/*
+** file: subnet.cpp
+** desc: definitions of subnet class functions
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #include "subnet.hpp"
 
 Subnet::Subnet(const char *addr, uint32_t alloc_addr, bool &err) {

@@ -1,3 +1,9 @@
+/*
+** file: dhcp-stats.cpp
+** desc: definitions of DHCPAnalyzer class functions
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #include "dhcp-stats.hpp"
 
 DHCPAnalyzer::DHCPAnalyzer() {

@@ -1,4 +1,4 @@
-CFLAGS:= -pedantic
+CFLAGS:= -pedantic -Wall
 EXEC:= dhcp-stats
 default:= $(EXEC)
 CC:=g++
@@ -10,7 +10,7 @@ clean:
 	rm -f *.o $(EXEC)
 
 pack: clean
-	tar -cvf xkubin27.tar dhcp-stats.* dhcp.* subnet.* main.cpp README.md examples Makefile manual.pdf
+	tar -cvf xkubin27.tar dhcp-stats.* dhcp.* subnet.* main.cpp README examples Makefile manual.pdf
 
 %.o: %.cpp %.hpp
 	$(CC) $(CFLAGS) -c $<

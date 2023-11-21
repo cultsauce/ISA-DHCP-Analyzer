@@ -1,3 +1,9 @@
+/*
+** file: dhcp.hpp
+** desc: dhcp packet structure and helper functions
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #ifndef DHCP_H
 #define DHCP_H 1
 

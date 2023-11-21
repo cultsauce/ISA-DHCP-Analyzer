@@ -1,3 +1,9 @@
+/*
+** file: main.cpp
+** desc: argument parsing, statistics visualization
+** author : xkubin27 (Tereza Kubincova)
+*/
+
 #include "dhcp-stats.hpp"
 #include <signal.h>
 
